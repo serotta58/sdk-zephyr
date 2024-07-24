@@ -146,8 +146,6 @@ static int udp_upload(int sock, int port,
 	uint32_t print_period;
 	int ret;
 
-	NET_DBG("packet_duration_us=%u, packet_duration ticks=%u", packet_duration_us, packet_duration);
-
 	if (packet_size > PACKET_SIZE_MAX) {
 		NET_WARN("Packet size too large! max size: %u",
 			 PACKET_SIZE_MAX);
@@ -175,7 +173,6 @@ static int udp_upload(int sock, int port,
 		uint64_t usecs64;
 		uint32_t secs, usecs;
 		int64_t loop_time;
-		int32_t loop_period;
 		int32_t adjust;
 
 		/* Timestamp */
@@ -183,8 +180,8 @@ static int udp_upload(int sock, int port,
 
 		/* Algorithm to maintain a given baud rate */
 		if (last_loop_time != loop_time) {
-			loop_period = (int32_t)(loop_time - last_loop_time);
-			adjust = packet_duration - loop_period;
+			adjust = packet_duration;
+			adjust -= (int32_t)(loop_time - last_loop_time);
 		} else {
 			/* It's the first iteration so no need for adjustment
 			 */
@@ -196,9 +193,6 @@ static int udp_upload(int sock, int port,
 		} else {
 			delay = 0U; /* delay should never be negative */
 		}
-
-		// TODO: Remove this after testing - Glen
-		adjust = 0; delay = 0;
 
 		last_loop_time = loop_time;
 
@@ -233,14 +227,11 @@ static int udp_upload(int sock, int port,
 		}
 
 		if (IS_ENABLED(CONFIG_NET_ZPERF_LOG_LEVEL_DBG)) {
-			static uint32_t last_nb_packets = 0;
-			if (print_time < loop_time) {
-				NET_DBG("nb_packets+%u=%u\tdelay=%u\tadjust=%d\tperiod=%d",
-					nb_packets - last_nb_packets,
+			if (print_time >= loop_time) {
+				NET_DBG("nb_packets=%u\tdelay=%u\tadjust=%d",
 					nb_packets, (unsigned int)delay,
-					(int)adjust, (int)loop_period);
+					(int)adjust);
 				print_time += print_period;
-				last_nb_packets = nb_packets;
 			}
 		}
 

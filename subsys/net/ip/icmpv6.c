@@ -52,6 +52,8 @@ const char *net_icmpv6_type2str(int icmpv6_type)
 		return "Neighbor Advertisement";
 	case NET_ICMPV6_MLDv2:
 		return "Multicast Listener Report v2";
+	case NET_ICMPV6_REDIR:
+		return "Redirect Message";
 	}
 
 	return "?";
