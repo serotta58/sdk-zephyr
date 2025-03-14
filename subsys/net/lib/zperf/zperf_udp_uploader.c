@@ -182,20 +182,20 @@ static int udp_upload(int sock, int port,
 		loop_time = k_uptime_ticks();
 
 		/* Algorithm to maintain a given baud rate */
-		if (last_loop_time != loop_time) {
-			loop_period = (int32_t)(loop_time - last_loop_time);
-			adjust = packet_duration - loop_period;
-		} else {
-			/* It's the first iteration so no need for adjustment
-			 */
-			adjust = 0;
-		}
+		// if (last_loop_time != loop_time) {
+		// 	loop_period = (int32_t)(loop_time - last_loop_time);
+		// 	adjust = packet_duration - loop_period;
+		// } else {
+		// 	/* It's the first iteration so no need for adjustment
+		// 	 */
+		// 	adjust = 0;
+		// }
 
-		if ((adjust >= 0) || (-adjust < delay)) {
-			delay += adjust;
-		} else {
-			delay = 0U; /* delay should never be negative */
-		}
+		// if ((adjust >= 0) || (-adjust < delay)) {
+		// 	delay += adjust;
+		// } else {
+		// 	delay = 0U; /* delay should never be negative */
+		// }
 
 		// TODO: Remove this after testing - Glen
 		adjust = 0; delay = 0;
